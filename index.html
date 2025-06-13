@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài thuyết trình: IoT và Nhà Thông Minh</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            overflow: hidden;
+        }
+        #presentation-container {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        #slide-window {
+            width: 90%;
+            max-width: 1100px;
+            aspect-ratio: 16/9;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative;
+        }
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            padding: 3rem 4rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: transform 0.6s ease-in-out, opacity 0.6s ease-in-out;
+            background-color: white;
+        }
+        .slide.active {
+            opacity: 1;
+            transform: translateX(0);
+            z-index: 10;
+        }
+        .slide.exiting {
+            transform: translateX(-100%);
+            opacity: 0;
+        }
+        .component-image {
+            max-height: 250px;
+            object-fit: contain;
+            border-radius: 1rem;
+            background-color: #f8fafc;
+            padding: 0.5rem;
+        }
+        /* Spinner */
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #3b82f6; /* blue-500 */
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background-color: white; padding: 2rem; border-radius: 1rem;
+            max-width: 600px; width: 90%; max-height: 80vh;
+            overflow-y: auto; position: relative;
+            transform: scale(0.95); opacity: 0;
+            animation: modal-pop 0.3s ease-out forwards;
+        }
+        @keyframes modal-pop {
+            to { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="presentation-container">
+        <div id="slide-window">
+            <!-- Slide 1: Title -->
+            <div class="slide active">
+                <div class="text-center">
+                    <h1 class="text-5xl md:text-6xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-500 to-teal-400 mb-4">Nhà Thông Minh IoT (Group 8)</h1>
+                    <p class="text-xl md:text-2xl text-gray-600">Nâng cao tiện nghi & Tiết kiệm năng lượng</p>
+                </div>
+            </div>
+            
+            <!-- Slide 2: Context & Problem -->
+            <div class="slide flex-row gap-12 items-center">
+                <div class="w-1/2">
+                    <h2 class="text-4xl font-bold text-gray-800 mb-6">Bối cảnh & Vấn đề</h2>
+                    <ul class="space-y-4 text-lg text-gray-600">
+                        <li class="flex items-start gap-3"><span class="text-blue-500 mt-1">&#10003;</span><span>Nhu cầu sống <strong class="text-gray-800">tiện nghi, hiện đại</strong> ngày càng tăng.</span></li>
+                        <li class="flex items-start gap-3"><span class="text-red-500 mt-1">&#10007;</span><span><strong class="text-gray-800">Lãng phí năng lượng</strong> do thói quen (quên tắt đèn, quạt).</span></li>
+                        <li class="flex items-start gap-3"><span class="text-green-500 mt-1">&#128161;</span><span><strong class="text-gray-800">Giải pháp:</strong> Hệ thống IoT tự động hóa, giám sát và điều khiển thông minh.</span></li>
+                    </ul>
+                </div>
+                 <div class="w-1/2">
+                    <img src="img/mo-hinh-ngoi-nha-thong-minh-hay-smarthome.jpg" alt="[Hình ảnh một ngôi nhà hiện đại]" class="rounded-xl shadow-lg object-cover w-full h-[350px]">
+                </div>
+            </div>
+
+            <!-- Slide 3: Project Goals -->
+            <div class="slide bg-gray-800 text-white">
+                 <h2 class="text-4xl font-bold mb-8 text-center">Mục tiêu Dự án</h2>
+                 <div class="flex gap-8 w-full max-w-4xl">
+                    <div class="bg-gray-700 p-6 rounded-lg w-1/2 text-center shadow-lg">
+                        <h3 class="text-2xl font-semibold text-teal-300 mb-3">Mục tiêu chính</h3>
+                        <p>Tiết kiệm năng lượng & Tăng sự tiện lợi qua tự động hóa.</p>
+                    </div>
+                     <div class="bg-gray-700 p-6 rounded-lg w-1/2 text-center shadow-lg">
+                        <h3 class="text-2xl font-semibold text-teal-300 mb-3">Mục tiêu cuối cùng</h3>
+                        <p>Xây dựng mô hình nhà thông minh chi phí thấp, dễ mở rộng.</p>
+                    </div>
+                 </div>
+            </div>
+            
+            <!-- Slide 4: System Architecture -->
+            <div class="slide flex justify-center items-center">
+                <img src="img/Block.png" alt="Sơ đồ khối hệ thống" class="rounded-xl shadow-lg object-contain max-h-96 border">
+            </div>
+            
+            <!-- Slide 5: Key Components Summary -->
+            <div class="slide">
+                <h2 class="text-4xl font-bold text-gray-800 mb-8 text-center">Các Linh kiện Chính</h2>
+                 <div class="grid grid-cols-3 gap-6 w-full max-w-5xl">
+                    <div class="bg-gray-100 p-4 rounded-lg text-center"><strong>ESP8266/ESP32</strong><p class="text-sm">Bộ não trung tâm</p></div>
+                    <div class="bg-gray-100 p-4 rounded-lg text-center"><strong>DHT11</strong><p class="text-sm">Nhiệt độ & Độ ẩm</p></div>
+                    <div class="bg-gray-100 p-4 rounded-lg text-center"><strong>LDR</strong><p class="text-sm">Ánh sáng</p></div>
+                    <div class="bg-gray-100 p-4 rounded-lg text-center"><strong>PIR SR501</strong><p class="text-sm">Chuyển động</p></div>
+                    <div class="bg-gray-100 p-4 rounded-lg text-center"><strong>Relay</strong><p class="text-sm">Công tắc điện tử</p></div>
+                    <div class="bg-gray-100 p-4 rounded-lg text-center"><strong>Động cơ Servo</strong><p class="text-sm">Chuyển động chính xác</p></div>
+                 </div>
+            </div>
+            
+            <!-- SLIDES FOR EACH COMPONENT START HERE -->
+
+            <!-- Slide 6: ESP8266/ESP32 -->
+            <div class="slide flex-row gap-12 items-center">
+                <div class="w-2/5 flex justify-center">
+                    <img src="img/esp8266.png" alt="[Hình ảnh của Vi điều khiển ESP8266]" class="component-image">
+                </div>
+                <div class="w-3/5">
+                    <h3 class="text-3xl font-bold text-gray-800 mb-4">Vi điều khiển ESP8266</h3>
+                    <p class="text-lg text-gray-600">
+                        Đóng vai trò là <strong class="text-indigo-600">bộ não trung tâm</strong>, ESP8266 nhận dữ liệu từ các cảm biến, xử lý thông tin, và đưa ra quyết định bật/tắt thiết bị. Nó cũng tích hợp Wi-Fi để kết nối và gửi dữ liệu đến ứng dụng di động.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Slide 7: DHT11 Sensor -->
+            <div class="slide flex-row gap-12 items-center">
+                <div class="w-3/5">
+                     <h3 class="text-3xl font-bold text-gray-800 mb-4">Cảm biến nhiệt độ & độ ẩm DHT11</h3>
+                    <p class="text-lg text-gray-600">
+                       Cảm biến này liên tục đo <strong class="text-indigo-600">nhiệt độ và độ ẩm</strong> của môi trường. Dữ liệu này là cơ sở để hệ thống tự động kích hoạt quạt hoặc máy điều hòa khi nhiệt độ vượt ngưỡng cài đặt, đảm bảo không gian luôn thoải mái.
+                    </p>
+                </div>
+                 <div class="w-2/5 flex justify-center">
+                    <img src="img/dht11.jpg" alt="[Hình ảnh của Cảm biến DHT11]" class="component-image">
+                </div>
+            </div>
+            
+            <!-- Slide 8: LDR Sensor -->
+            <div class="slide flex-row gap-12 items-center">
+                <div class="w-2/5 flex justify-center">
+                    <img src="img/cambienanhsang.jpg" alt="[Hình ảnh của Cảm biến ánh sáng LDR]" class="component-image">
+                </div>
+                <div class="w-3/5">
+                     <h3 class="text-3xl font-bold text-gray-800 mb-4">Cảm biến ánh sáng LDR</h3>
+                    <p class="text-lg text-gray-600">
+                       LDR (Quang trở) giúp hệ thống nhận biết được <strong class="text-indigo-600">trời đang sáng hay tối</strong>. Khi ánh sáng tự nhiên không đủ, hệ thống sẽ tự động bật đèn để đảm bảo đủ sáng cho sinh hoạt và ngược lại, giúp tiết kiệm điện tối đa vào ban ngày.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Slide 9: PIR Sensor -->
+            <div class="slide flex-row gap-12 items-center">
+                 <div class="w-3/5">
+                     <h3 class="text-3xl font-bold text-gray-800 mb-4">Cảm biến chuyển động PIR SR501</h3>
+                    <p class="text-lg text-gray-600">
+                       Đây là "mắt thần" của ngôi nhà, có khả năng <strong class="text-indigo-600">phát hiện sự hiện diện của con người</strong> qua thân nhiệt. Thiết bị chỉ được kích hoạt khi có người trong phòng, tránh lãng phí năng lượng khi phòng trống.
+                    </p>
+                </div>
+                 <div class="w-2/5 flex justify-center">
+                    <img src="img/cambienchuyendong.jpg" alt="[Hình ảnh của Cảm biến chuyển động PIR]" class="component-image">
+                </div>
+            </div>
+            
+             <!-- Slide 10: Relay Module -->
+            <div class="slide flex-row gap-12 items-center">
+                <div class="w-2/5 flex justify-center">
+                    <img src="img/modulerelay.jpg" alt="[Hình ảnh của Module Relay]" class="component-image">
+                </div>
+                <div class="w-3/5">
+                     <h3 class="text-3xl font-bold text-gray-800 mb-4">Module Relay</h3>
+                    <p class="text-lg text-gray-600">
+                       Relay hoạt động như một <strong class="text-indigo-600">công tắc điện tử an toàn</strong>. Nó cho phép vi điều khiển (vốn dùng điện áp thấp) có thể bật/tắt các thiết bị điện gia dụng sử dụng điện áp cao (220V) như đèn, quạt một cách an toàn và hiệu quả.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Slide 11: Servo Motor -->
+            <div class="slide flex-row gap-12 items-center">
+                 <div class="w-3/5">
+                     <h3 class="text-3xl font-bold text-gray-800 mb-4">Động cơ Servo</h3>
+                    <p class="text-lg text-gray-600">
+                       Khác với động cơ DC, Servo cho phép <strong class="text-indigo-600">điều khiển góc quay một cách chính xác</strong>. Điều này lý tưởng cho các ứng dụng cần sự tinh chỉnh như đóng/mở rèm cửa, cửa sổ, hoặc điều chỉnh hướng gió của máy lạnh.
+                    </p>
+                </div>
+                 <div class="w-2/5 flex justify-center">
+                    <img src="img/z6699373138488_ecffba5448dc34a788c5786d5b7f3710.jpg" alt="[Hình ảnh của Động cơ Servo]" class="component-image">
+                </div>
+            </div>
+            
+            <!-- Slide 12: Logic -->
+            <div class="slide flex-row gap-12">
+                <div class="w-1/2 bg-blue-50 p-8 rounded-xl shadow-lg">
+                    <h3 class="text-2xl font-bold text-blue-800 mb-4">💡 Tự động chiếu sáng</h3>
+                    <p class="mb-2"><strong>Khi:</strong> Trời tối + Có người</p>
+                    <p class="text-green-600 font-semibold">&rarr; Bật đèn</p>
+                    <hr class="my-4">
+                    <p class="mb-2"><strong>Khi:</strong> Không có người</p>
+                    <p class="text-red-600 font-semibold">&rarr; Tắt đèn</p>
+                </div>
+                <div class="w-1/2 bg-teal-50 p-8 rounded-xl shadow-lg">
+                    <h3 class="text-2xl font-bold text-teal-800 mb-4">💨 Tự động làm mát</h3>
+                    <p class="mb-2"><strong>Khi:</strong> Nóng > 28°C + Có người</p>
+                    <p class="text-green-600 font-semibold">&rarr; Bật quạt</p>
+                    <hr class="my-4">
+                    <p class="mb-2"><strong>Khi:</strong> Mát hoặc Không có người</p>
+                    <p class="text-red-600 font-semibold">&rarr; Tắt quạt</p>
+                </div>
+            </div>
+
+            <!-- Slide 13: Results -->
+             <div class="slide">
+                 <h2 class="text-4xl font-bold text-gray-800 mb-8 text-center">Kết quả & Lợi ích</h2>
+                 <div class="space-y-4 max-w-2xl text-lg">
+                     <p class="p-4 bg-green-100 border-l-4 border-green-500 rounded-lg"><strong>Hiệu quả:</strong> Hệ thống hoạt động ổn định và chính xác.</p>
+                     <p class="p-4 bg-blue-100 border-l-4 border-blue-500 rounded-lg"><strong>Tiết kiệm:</strong> Giảm thiểu đáng kể lượng điện tiêu thụ.</p>
+                     <p class="p-4 bg-purple-100 border-l-4 border-purple-500 rounded-lg"><strong>Tiện lợi:</strong> Nâng cao chất lượng sống, tự động hóa công việc.</p>
+                     <p class="p-4 bg-yellow-100 border-l-4 border-yellow-500 rounded-lg"><strong>Linh hoạt:</strong> Chi phí thấp và dễ dàng mở rộng trong tương lai.</p>
+                 </div>
+            </div>
+
+            <!-- Slide 14: Conclusion -->
+            <div class="slide">
+                <div class="text-center max-w-3xl">
+                    <h2 class="text-4xl font-bold text-gray-800 mb-6">Kết luận</h2>
+                     <p class="text-xl text-gray-600 mb-8">
+                        Dự án sẽ được triển khai hệ thống nhà thông minh IoT, một giải pháp thiết thực cho lối sống <span class="font-semibold text-blue-600">tiết kiệm</span> và <span class="font-semibold text-green-600">hiện đại</span>.
+                    </p>
+                    <button id="suggestIdeasBtn" class="bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-bold py-3 px-6 rounded-full shadow-lg transition-transform transform hover:scale-105">
+                        ✨ Gợi ý Hướng phát triển
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Slide 15: Q&A -->
+            <div class="slide">
+                 <div class="text-center w-full max-w-3xl">
+                    <h2 class="text-4xl font-bold text-gray-800 mb-4"> Hỏi & Đáp</h2>
+                    <p class="text-lg text-gray-600 mb-6">Có câu hỏi nào cho dự án?</p>
+                    <div class="flex gap-2">
+                         <input type="text" id="qaInput" class="flex-grow p-3 border-2 border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-400 transition-shadow" placeholder="Đặt câu hỏi tại đây...">
+                         <button id="askAiBtn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-5 rounded-full shadow-md transition-colors">Hỏi</button>
+                    </div>
+                    <div id="qaResult" class="mt-6 p-4 bg-gray-50 rounded-lg text-left min-h-[100px] border">
+                         <p class="text-gray-500"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 16: Contributors -->
+            <div class="slide">
+                <h2 class="text-4xl font-bold text-gray-800 mb-8 text-center">Vai Trò Đóng Góp</h2>
+                <div class="max-w-2xl mx-auto">
+                    <ul class="space-y-4 text-lg">
+                        <li class="flex items-center gap-4">
+                            <span class="bg-blue-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-xl">P</span>
+                            <span><strong>Nguyen Lam Phuoc</strong>: Slide</span>
+                        </li>
+                        <li class="flex items-center gap-4">
+                            <span class="bg-green-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-xl">K</span>
+                            <span><strong>Nguyen Anh Khoi</strong>: Overleaf</span>
+                        </li>
+                        <li class="flex items-center gap-4">
+                            <span class="bg-purple-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-xl">D</span>
+                            <span><strong>Nguyen Hoang Dai</strong>: Content Researcher</span>
+                        </li>
+                        <li class="flex items-center gap-4">
+                            <span class="bg-yellow-500 text-white rounded-full w-10 h-10 flex items-center justify-center font-bold text-xl">M</span>
+                            <span><strong>Phung Tuan Minh</strong>: Content Researcher</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Navigation -->
+        <div class="flex justify-between items-center mt-6 w-full max-w-md">
+            <button id="prevBtn" class="bg-white hover:bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-full shadow-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                &larr;
+            </button>
+            <div id="slideCounter" class="text-lg font-medium text-gray-700"></div>
+            <button id="nextBtn" class="bg-white hover:bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded-full shadow-md transition-colors">
+                &rarr;
+            </button>
+        </div>
+    </div>
+    
+    <!-- Modal -->
+    <div id="geminiModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3 id="modalTitle" class="text-2xl font-bold text-gray-800 mb-4"></h3>
+            <div id="modalBody"></div>
+            <button id="modalCloseBtn" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-2xl">&times;</button>
+        </div>
+    </div>
+
+    <script>
+        // --- Slideshow Logic ---
+        const slides = document.querySelectorAll('.slide');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const slideCounter = document.getElementById('slideCounter');
+        let currentSlide = 0;
+
+        function showSlide(n) {
+            const oldSlide = slides[currentSlide];
+            const newSlide = slides[n];
+
+            if (oldSlide) {
+                oldSlide.classList.remove('active');
+                if (n > currentSlide) {
+                    oldSlide.classList.add('exiting');
+                }
+            }
+            
+            if (newSlide) {
+                newSlide.classList.add('active');
+                newSlide.classList.remove('exiting');
+            }
+            
+            currentSlide = n;
+            slideCounter.textContent = `${n + 1} / ${slides.length}`;
+            prevBtn.disabled = n === 0;
+            nextBtn.disabled = n === slides.length - 1;
+        }
+
+        nextBtn.addEventListener('click', () => {
+            if (currentSlide < slides.length - 1) showSlide(currentSlide + 1);
+        });
+        prevBtn.addEventListener('click', () => {
+            if (currentSlide > 0) showSlide(currentSlide - 1);
+        });
+
+        // --- Gemini API Integration ---
+        const suggestIdeasBtn = document.getElementById('suggestIdeasBtn');
+        const askAiBtn = document.getElementById('askAiBtn');
+        const qaInput = document.getElementById('qaInput');
+        const qaResult = document.getElementById('qaResult');
+        
+        const geminiModal = document.getElementById('geminiModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalBody = document.getElementById('modalBody');
+        const modalCloseBtn = document.getElementById('modalCloseBtn');
+        
+        const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=';
+        const API_KEY = "";
+
+        function showModal(title, content) {
+            modalTitle.innerHTML = title;
+            modalBody.innerHTML = content;
+            geminiModal.classList.remove('hidden');
+        }
+        function hideModal() { geminiModal.classList.add('hidden'); }
+        modalCloseBtn.addEventListener('click', hideModal);
+        geminiModal.addEventListener('click', (e) => { if (e.target === geminiModal) hideModal(); });
+        
+        function showLoading(element, isModal = false) {
+             const loaderHTML = '<div class="flex justify-center items-center"><div class="loader"></div></div>';
+             if (isModal) {
+                showModal(modalTitle.innerText, loaderHTML);
+             } else {
+                element.innerHTML = loaderHTML;
+             }
+        }
+
+        suggestIdeasBtn.addEventListener('click', async () => {
+            const buttonOriginalText = suggestIdeasBtn.innerHTML;
+            suggestIdeasBtn.disabled = true;
+            suggestIdeasBtn.innerHTML = '<div class="loader mx-auto" style="width: 24px; height: 24px; border-width: 2px;"></div>';
+            const prompt = `Dựa trên một dự án nhà thông minh sử dụng ESP8266, cảm biến DHT11, cảm biến ánh sáng và cảm biến chuyển động để điều khiển đèn và quạt nhằm tiết kiệm năng lượng, hãy đề xuất 5 ý tưởng sáng tạo để cải tiến hoặc mở rộng dự án trong tương lai. Trả lời bằng tiếng Việt, định dạng markdown với tiêu đề và danh sách.`;
+            
+            try {
+                const response = await callGeminiAPI(prompt);
+                showModal('✨ Hướng phát triển Tương lai', response.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'));
+            } catch (error) {
+                console.error("Lỗi:", error);
+                showModal('Lỗi', '<p class="text-red-500">Không thể lấy gợi ý. Vui lòng thử lại.</p>');
+            } finally {
+                suggestIdeasBtn.disabled = false;
+                suggestIdeasBtn.innerHTML = buttonOriginalText;
+            }
+        });
+
+        askAiBtn.addEventListener('click', async () => {
+            const question = qaInput.value.trim();
+            if (!question) return;
+            
+            const buttonOriginalText = askAiBtn.innerHTML;
+            askAiBtn.disabled = true;
+            qaInput.disabled = true;
+            showLoading(qaResult);
+
+            const presentationContext = `
+                Bối cảnh: Nhà thông minh dùng IoT để tiết kiệm năng lượng và tăng tiện lợi.
+                Linh kiện: ESP8266/ESP32, cảm biến nhiệt độ DHT11, cảm biến ánh sáng LDR, cảm biến chuyển động PIR SR501, Relay, Động cơ Servo.
+                Hoạt động: Đèn bật khi trời tối và có người. Quạt bật khi nhiệt độ cao (>28°C) và có người. Tự động tắt khi không cần thiết. Động cơ servo dùng để điều khiển chính xác góc quay của rèm cửa, cửa sổ.
+            `;
+            const prompt = `Bạn là trợ lý AI cho một bài thuyết trình về dự án Nhà thông minh IoT. Chỉ trả lời câu hỏi dựa trên bối cảnh sau đây. Nếu không có thông tin, hãy nói rằng bạn không có đủ dữ liệu. Trả lời ngắn gọn, rõ ràng bằng tiếng Việt. Bối cảnh: ${presentationContext} Câu hỏi: "${question}"`;
+            
+            try {
+                const response = await callGeminiAPI(prompt);
+                qaResult.innerHTML = `<p>${response}</p>`;
+            } catch (error) {
+                 console.error("Lỗi:", error);
+                 qaResult.innerHTML = '<p class="text-red-500">Lỗi kết nối AI. Vui lòng thử lại.</p>';
+            } finally {
+                askAiBtn.disabled = false;
+                qaInput.disabled = false;
+                askAiBtn.innerHTML = buttonOriginalText;
+            }
+        });
+        
+        qaInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                askAiBtn.click();
+            }
+        });
+
+        async function callGeminiAPI(prompt) {
+            const payload = { contents: [{ parts: [{ text: prompt }] }] };
+            const response = await fetch(API_URL + API_KEY, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            if (!response.ok) throw new Error(`Lỗi API: ${response.status}`);
+            const data = await response.json();
+            if (data.candidates?.[0]?.content?.parts?.[0]?.text) {
+                return data.candidates[0].content.parts[0].text;
+            } else {
+                 throw new Error("Cấu trúc phản hồi API không hợp lệ.");
+            }
+        }
+        
+        window.onload = () => showSlide(0);
+    </script>
+</body>
+</html>
